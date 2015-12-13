@@ -1,0 +1,27 @@
+{
+  "name": "nppxmlhost",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "mocha lib/**/tests/*.spec.js"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.34",
+    "boom": "^2.8.0",
+    "catbox-memory": "^1.1.1",
+    "chokidar": "^1.0.5",
+    "concat-stream": "^1.5.0",
+    "glue": "^2.1.1",
+    "good": "^6.3.0",
+    "good-console": "^5.0.2",
+    "good-file": "^5.0.1",
+    "hapi": "^8.8.1",
+    "joi": "^6.6.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "rimraf": "^2.4.2",
+    "sinon": "^1.15.4",
+    "unexpected": "^9.5.0",
+    "unexpected-sinon": "^6.4.2"
+  }
+}

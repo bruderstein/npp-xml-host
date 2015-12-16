@@ -6,8 +6,8 @@
   },
   "main": "src/index",
   "dependencies": {
-    "bluebird": "^2.9.34",
-    "boom": "^2.8.0",
+    "bluebird": "^3.1.1",
+    "boom": "^3.0.0",
     "catbox-memory": "^1.1.1",
     "chokidar": "^1.0.5",
     "concat-stream": "^1.5.0",
@@ -17,14 +17,14 @@
     "good": "^6.3.0",
     "good-console": "^5.0.2",
     "good-file": "^5.1.1",
-    "hapi": "^8.8.1",
-    "joi": "^6.6.1"
+    "hapi": "^11.1.2",
+    "joi": "^7.0.1"
   },
   "devDependencies": {
     "mocha": "^2.2.5",
     "rimraf": "^2.4.2",
     "sinon": "^1.15.4",
-    "unexpected": "^9.5.0",
-    "unexpected-sinon": "^6.4.2"
+    "unexpected": "^10.4.0",
+    "unexpected-sinon": "^9.0.4"
   }
 }

@@ -7,11 +7,12 @@ RUN mkdir /app
 EXPOSE 5001
 VOLUME /content
 
+COPY ./dockerAssets/start.sh /app/
+
 COPY ./package.json /app/
 RUN cd /app && \
-    npm install
+npm install
 
-COPY ./*.js /app/
-COPY ./lib/    /app/lib/
+COPY . /app/
 
-CMD ["node", "/app/index"]
+CMD ["/app/start.sh"]

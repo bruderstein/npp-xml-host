@@ -1,0 +1,4 @@
+<plugins>
+    <plugin name="tester" />
+    <plugin name="tester2" />
+</plugins>

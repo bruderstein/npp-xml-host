@@ -1,0 +1,6 @@
+{
+    "contentBase": "/content",
+    "log": {
+        "path": "/logs"
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "instance": "default",
+  "contentBase": "sampleContent",
+  "log": {
+    "path": "logs",
+    "filename": "xmlhost.log"
+  }
+}

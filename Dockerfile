@@ -4,7 +4,7 @@ MAINTAINER Dave Brotherstone <davegb@pobox.com>
 
 RUN mkdir /app
 
-EXPOSE 5001
+EXPOSE 5000
 VOLUME /content
 
 COPY ./dockerAssets/start.sh /app/

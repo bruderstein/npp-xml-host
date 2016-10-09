@@ -13,12 +13,13 @@
     "concat-stream": "^1.5.0",
     "config": "^1.17.1",
     "forever": "^0.15.1",
-    "glue": "^2.1.1",
+    "glue": "^4.0.0",
     "good": "^6.3.0",
     "good-console": "^5.0.2",
     "good-file": "^5.1.1",
     "hapi": "^11.1.2",
-    "joi": "^7.0.1"
+    "joi": "^7.0.1",
+    "prom-client": "^6.0.0"
   },
   "devDependencies": {
     "mocha": "^2.2.5",

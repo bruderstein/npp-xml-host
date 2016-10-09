@@ -6,6 +6,10 @@ var Fs = Promise.promisifyAll(require('fs'));
 var Joi = require('joi');
 var Boom = require('boom');
 var Watcher = require('chokidar');
+var promClient = require('prom-client');
+
+var validationDateGauge = new promClient.Gauge('validation_file_changed_seconds', 
+    'Time the last validation file was updated, in seconds since epoch');
 
 var validate = {};
 var validateEtag = '';
@@ -26,6 +30,7 @@ function refresh(validatePath, emitter) {
         sha1.update(JSON.stringify(nextValidate));
         validateEtag = sha1.digest('hex');
         validateLastModified = new Date().toISOString();
+        validationDateGauge.set(Date.now() / 1000);
         emitter.emit('changed');
     });
 }
@@ -63,8 +68,7 @@ function validatePlugin(server, options, next) {
                 expiresIn: 1000 * 60 * 60 * 4
             },
             handler: function (request, reply) {
-
-
+                
                 var response = reply(validate[request.query.md5] || 'unknown');
                 response.etag(validateEtag);
                 response.header('last-modified', validateLastModified);

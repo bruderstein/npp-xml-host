@@ -5,8 +5,14 @@ var Fs = Promise.promisifyAll(require('fs'));
 var Boom = require('boom');
 var EventEmitter = require('events').EventEmitter;
 var Watcher = require('chokidar');
+var promClient = require('prom-client');
 
 var files = {};
+var filesUpdateGauge = new promClient.Gauge('file_last_modified_seconds',
+    'Last modified stamp of content was updated, in seconds since epoch', ['file']);
+
+var refreshGuage = new promClient.Gauge('file_refresh_seconds',
+    'Last time the content files were checked and updated, in seconds since epoch');
 
 function loadFiles(fromPath) {
     return Fs.readdirAsync(fromPath)
@@ -18,7 +24,7 @@ function loadFiles(fromPath) {
                     stat: Fs.statAsync(Path.join(fromPath, file))
                 })
                     .then(function (results) {
-                        return { file: file, contents: results.contents, lastModified: results.stat.mtime.toISOString() };
+                        return { file: file, contents: results.contents, lastModified: results.stat.mtime };
                     });
 
             }));
@@ -31,8 +37,9 @@ function loadFiles(fromPath) {
                 nextFilesMap[file.file] = {
                     contents: file.contents,
                     eTag: hash.digest('hex'),
-                    lastModified: file.lastModified
-                }
+                    lastModified: file.lastModified.toISOString()
+                };
+                filesUpdateGauge.labels(file.file).set(file.lastModified.getTime() / 1000);
             });
             return nextFilesMap;
         });
@@ -41,6 +48,7 @@ function loadFiles(fromPath) {
 function refresh(path, emitter) {
     return loadFiles(path).then(function (nextFiles) {
         files = nextFiles;
+        refreshGuage.set(Date.now() / 1000);
         emitter.emit('changed');
     });
 }

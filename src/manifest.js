@@ -21,7 +21,12 @@ module.exports = function () {
                 options: { select: ['metrics'] }
             },
             {
-                plugin: './modules/metricsEndpoint',
+                plugin: {
+                    register: './modules/metricsEndpoint',
+                    options: {
+                        bearerToken: process.env.METRICS_TOKEN
+                    }
+                },
                 options: {select: ['telemetry']}
             },
             {

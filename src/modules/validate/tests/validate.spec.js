@@ -11,7 +11,7 @@ var ValidatePlugin = require('../');
 var expect = Unexpected.clone();
 
 // TODO: This should go to unexpected!
-expect.addAssertion('date', '[not] to be within', function (expect, subject, start, timeOf, finish) {
+expect.addAssertion('<date> [not] to be within', function (expect, subject, start, timeOf, finish) {
     if (finish === undefined) {
         this.argsOutput = function (output) {
             output.appendInspected(start).text('..').appendInspected(finish);
@@ -76,9 +76,17 @@ describe('ValidatePlugin', function () {
                     }));
             })
             .then(function () {
+              return Fs.writeFileAsync(Path.join(tempDir, 'validate64.json'),
+                JSON.stringify({
+                  '64646464646464646464646464646464': 'ok',
+                  '6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a': 'bad'
+                }));
+            })
+            .then(function () {
                 var pluginOptions = {
                     relativeTo: tempDir,
-                    validateFile: 'validate.json'
+                    validateFile: 'validate.json',
+                    validate64File: 'validate64.json',
                 };
 
                 server.register({
@@ -146,6 +154,17 @@ describe('ValidatePlugin', function () {
             expect(response.result, 'to satisfy', { statusCode: 400 });
         });
     });
+    
+    it('returns an ok response for an md5 in the validate64.json', function () {
+      
+      return inject({
+        method: 'get',
+        url: '/pm/validate?md5=64646464646464646464646464646464'
+      }).then(function (response) {
+        expect(response.statusCode, 'to equal', 200);
+        expect(response.result, 'to equal', 'ok');
+      });
+    });
 
     describe('after update to validate.json', function () {
 
@@ -174,7 +193,47 @@ describe('ValidatePlugin', function () {
                 expect(response.result, 'to equal', 'ok');
             });
 
-        })
+        });
     });
+    
+  describe('after update to validate64.json', function () {
+    
+    beforeEach(function (done) {
+      
+      Fs.unlinkAsync(Path.join(tempDir, 'validate64.json'))
+        .then(function () {
+          return Fs.writeFileAsync(Path.join(tempDir, 'validate64.json'),
+            JSON.stringify({
+              '64646464646464646464646464646464': 'bad',
+              '65656565656565656565656565656565': 'ok',
+              '6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a': 'ok',
+            }));
+        }).then(function () {
+        server.plugins['nppxmlhost-validate-plugin'].events.on('changed', function () { done(); });
+      });
+    });
+    
+    it('returns a `ok` response for the entry changed from unknown to ok', function () {
+      
+      return inject({
+        method: 'get',
+        url: '/pm/validate?md5=65656565656565656565656565656565'
+      }).then(function (response) {
+        expect(response.statusCode, 'to equal', 200);
+        expect(response.result, 'to equal', 'ok');
+      });
+    });
+    
+    it('returns a `bad` response for the entry changed from ok to bad', function () {
+    
+      return inject({
+        method: 'get',
+        url: '/pm/validate?md5=64646464646464646464646464646464'
+      }).then(function (response) {
+        expect(response.statusCode, 'to equal', 200);
+        expect(response.result, 'to equal', 'bad');
+      });
+    });
+  });
 
 });

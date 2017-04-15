@@ -15,16 +15,27 @@ var validate = {};
 var validateEtag = '';
 var validateLastModified = '';
 
-
-function loadFile(validateXmlFile) {
-    return Fs.readFileAsync(validateXmlFile)
+function loadFiles(validateXmlFiles) {
+    return Promise.all(validateXmlFiles.map(validateXmlFile => {
+  
+      if (!validateXmlFile) {
+        return {};
+      }
+  
+      return Fs.readFileAsync(validateXmlFile)
         .then(function (content) {
-            return JSON.parse(content);
+          return JSON.parse(content);
         });
+    })).then(results => {
+      var allResults = results.reduce((all, result) =>
+          Object.assign(all, result)
+        , {});
+      return allResults;
+    });
 }
 
-function refresh(validatePath, emitter) {
-    return loadFile(validatePath).then(function (nextValidate) {
+function refresh(validatePaths, emitter) {
+    return loadFiles(validatePaths).then(function (nextValidate) {
         validate = nextValidate;
         var sha1 = Crypto.createHash('sha1');
         sha1.update(JSON.stringify(nextValidate));
@@ -35,16 +46,16 @@ function refresh(validatePath, emitter) {
     });
 }
 
-function watchFiles(path, emitter) {
+function watchFiles(paths, emitter) {
     var timeout = null;
-    return Watcher.watch(path, {})
+    return Watcher.watch(paths, {})
         .on('all', function (event, changedFile) {
             if (timeout !== null) {
                 clearTimeout(timeout);
             }
             timeout = setTimeout(function () {
                 timeout = null;
-                refresh(path, emitter);
+                refresh(paths, emitter);
             }, 500);
         });
 }
@@ -78,12 +89,15 @@ function validatePlugin(server, options, next) {
         }
     });
 
-    var validatePath = Path.join(options.relativeTo, options.validateFile);
+    var validatePaths = [ Path.join(options.relativeTo, options.validateFile) ];
+    if (options.validate64File) {
+        validatePaths.push(Path.join(options.relativeTo, options.validate64File));
+    }
     var eventEmitter = new EventEmitter();
     server.expose('events', eventEmitter);
-    server.expose('watcher', watchFiles(validatePath, eventEmitter));
+    server.expose('watcher', watchFiles(validatePaths, eventEmitter));
 
-    refresh(validatePath, eventEmitter)
+    refresh(validatePaths, eventEmitter)
         .then(function () {
             next();
         });

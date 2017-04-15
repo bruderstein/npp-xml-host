@@ -11,7 +11,7 @@ var XmlFiles = require('../');
 var expect = Unexpected.clone();
 
 // TODO: This should go to unexpected!
-expect.addAssertion('date', '[not] to be within', function (expect, subject, start, timeOf, finish) {
+expect.addAssertion('<date> [not] to be within <number> <string> <date>', function (expect, subject, start, timeOf, finish) {
     if (finish === undefined) {
         this.argsOutput = function (output) {
             output.appendInspected(start).text('..').appendInspected(finish);

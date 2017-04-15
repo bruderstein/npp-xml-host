@@ -34,6 +34,7 @@ module.exports = function () {
                     register: './modules/validate',
                     options: {
                         validateFile: Path.join(Config.contentBase, 'validate/validate.json'),
+                        validate64File: Path.join(Config.contentBase, 'validate/validate64.json'),
                         relativeTo: basePathRelativeTo
                     }
                 },

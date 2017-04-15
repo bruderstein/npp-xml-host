@@ -1,12 +1,12 @@
 
 module.exports = function (wallaby) { // eslint-disable-line no-unused-vars
     return {
-        files: ['lib/**/*.js', 'lib/**/*.json',
+        files: ['src/**/*.js', 'src/**/*.json',
             {
-                pattern: 'lib/**/tests/*.spec.js',
+                pattern: 'src/**/tests/*.spec.js',
                 ignore: true
             }],
-        tests: ['lib/**/*.spec.js'],
+        tests: ['src/**/*.spec.js'],
         env: {
             type: 'node',
             runner: 'node',
@@ -15,7 +15,12 @@ module.exports = function (wallaby) { // eslint-disable-line no-unused-vars
                 regular: 1,
                 recycle: false
             }
-        }
+        },
+      
+      setup() {
+            var promClient = require('prom-client');
+            promClient.register.clear();
+      }
 
     };
 };
